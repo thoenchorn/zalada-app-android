@@ -1,8 +1,9 @@
 package com.thoen.zaladaandroid.presentation.main.model
 
+import androidx.annotation.DrawableRes
 
 data class NavItem(
     val title: String,
-    val icon: Int,
-    val iconSelected: Int,
+    @DrawableRes val icon: Int,
+    @DrawableRes val iconSelected: Int,
 )

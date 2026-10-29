@@ -19,5 +19,4 @@ fun ProductDto.toDomain(): Product = Product(
 fun CategoryDto.toDomain(): Category = Category(
     id = id,
     name = name,
-    iconRes = iconRes,
 )

@@ -1,24 +1,22 @@
 package com.thoen.zaladaandroid.presentation.profile
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,222 +25,186 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.thoen.zaladaandroid.R
+import com.thoen.zaladaandroid.domain.model.ThemeMode
 import com.thoen.zaladaandroid.presentation.component.AlertDialogCustom
-import com.thoen.zaladaandroid.presentation.navigation.Login
+import com.thoen.zaladaandroid.presentation.component.GlassCard
 import com.thoen.zaladaandroid.presentation.component.ShapeIcons
+import com.thoen.zaladaandroid.presentation.component.horizontalPadding
+import com.thoen.zaladaandroid.presentation.component.rememberWindowWidth
+import com.thoen.zaladaandroid.presentation.navigation.Login
 import com.thoen.zaladaandroid.presentation.profile.component.ItemProfile
 import com.thoen.zaladaandroid.presentation.profile.component.SwitcherNotification
+import com.thoen.zaladaandroid.presentation.profile.component.ThemeModeDialog
+import com.thoen.zaladaandroid.presentation.theme.LocalThemeController
+import com.thoen.zaladaandroid.presentation.theme.label
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    navController: NavController
-) {
-
-    var checked by remember { mutableStateOf(false) }
+fun ProfileScreen(navController: NavController) {
+    var notificationsEnabled by remember { mutableStateOf(true) }
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    val themeController = LocalThemeController.current
+    val horizontal = rememberWindowWidth().horizontalPadding
 
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "My Profile",
-                        color = Color.Black,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 20.sp
-                    )
-                },
-                actions = {
-                    ShapeIcons(
-                        onClick = {},
-                        icon = R.drawable.edit
-                    )
-                    Spacer(modifier = Modifier.size(12.dp))
-                }
-            )
-
-        },
-        bottomBar = {
-            BottomAppBar(
-                actions = {
-
-                }
-            )
-        },
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .imePadding()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = horizontal)
+            .padding(top = 16.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
+            Text(
+                text = "My Profile",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            ShapeIcons(onClick = {}, icon = R.drawable.edit)
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        GlassCard(
+            shape = MaterialTheme.shapes.extraLarge,
+            glow = true,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
+                Image(
+                    painter = painterResource(id = R.drawable.thoen),
+                    contentDescription = "Profile",
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFF2BA8CF).copy(alpha = 0.2f),
-                                    Color.White,
-                                    Color(0xFF2BA8CF).copy(alpha = 0.1f),
-                                    Color(0xFFF898DE).copy(alpha = 0.2f)
-                                ),
-                            )
-                        )
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
+                        .size(74.dp)
+                        .clip(CircleShape)
                 )
-                {
-                    Column (
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.thoen),
-                            contentDescription = "Profile",
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(100))
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text(
-                            text = "Chorn THOEN",
-                            color = Color.Black,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 20.sp
-                        )
-                        Text(
-                            text = "thoenchorn@gmail.com",
-                            color = Color.Gray,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 14.sp
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.size(24.dp))
-                Text(
-                    text = "Account Settings",
-                    color = Color.Black,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 14.sp
-                )
-                Spacer(modifier = Modifier.size(12.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White)
-                ) {
-                    Column {
-                        ItemProfile(
-                            icon = R.drawable.location_bulk,
-                            title = "Address"
-                        )
-                        ItemProfile(
-                            icon = R.drawable.wallet,
-                            title = "Payment"
-                        )
-                        ItemProfile(
-                            icon = R.drawable.time,
-                            title = "Order History",
-                        )
-                        SwitcherNotification(
-                            icon = R.drawable.notification_bulk,
-                            title = "Notification",
-                            checked = checked,
-                            onCheckedChange = {
-                                checked = it
-                            }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.size(16.dp))
-                Text(
-                    text = "General",
-                    color = Color.Black,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 14.sp
-                )
-                Spacer(modifier = Modifier.size(12.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White)
-                ) {
-                    Column {
-                        ItemProfile(
-                            icon = R.drawable.setting,
-                            title = "Change Language"
-                        )
-                        ItemProfile(
-                            icon = R.drawable.password,
-                            title = "Change Password"
-                        )
-                        ItemProfile(
-                            icon = R.drawable.done,
-                            title = "Privacy Policy"
-                        )
-                        ItemProfile(
-                            icon = R.drawable.about,
-                            title = "About Us",
-                            end = true
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.size(24.dp))
-
-                ItemProfile(
-                    icon = R.drawable.logout,
-                    title = "Logout",
-                    end = true,
-                    color = Color.Red,
-                    onClick = {
-                        showLogoutDialog = true
-                    }
-                )
-                if (showLogoutDialog) {
-                    AlertDialogCustom(
-                        onDismissRequest = {
-                            showLogoutDialog = false
-                        },
-                        onConfirmation = {
-                            showLogoutDialog = false
-                            navController.navigate(Login.route)
-                        },
-                        dialogTitle = "Logout",
-                        dialogText = "Are you sure you want to logout?",
+                Spacer(modifier = Modifier.size(14.dp))
+                Column {
+                    Text(
+                        text = "Chorn THOEN",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "thoenchorn@gmail.com",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Spacer(modifier = Modifier.size(16.dp))
             }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        SectionTitle("Account Settings")
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingsCard {
+            ItemProfile(icon = R.drawable.location_bulk, title = "Address")
+            ItemProfile(icon = R.drawable.wallet, title = "Payment")
+            ItemProfile(icon = R.drawable.time, title = "Order History")
+            SwitcherNotification(
+                icon = R.drawable.notification_bulk,
+                title = "Notification",
+                checked = notificationsEnabled,
+                onCheckedChange = { notificationsEnabled = it }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+        SectionTitle("Appearance")
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingsCard {
+            ItemProfile(
+                icon = R.drawable.circles,
+                title = "Theme",
+                trailingText = themeController?.mode?.label() ?: ThemeMode.System.label(),
+                onClick = {
+                    if (themeController != null) showThemeDialog = true
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+        SectionTitle("General")
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingsCard {
+            ItemProfile(icon = R.drawable.setting, title = "Change Language")
+            ItemProfile(icon = R.drawable.password, title = "Change Password")
+            ItemProfile(icon = R.drawable.done, title = "Privacy Policy")
+            ItemProfile(icon = R.drawable.about, title = "About Us", end = true)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        SettingsCard {
+            ItemProfile(
+                icon = R.drawable.logout,
+                title = "Logout",
+                end = true,
+                color = MaterialTheme.colorScheme.error,
+                onClick = { showLogoutDialog = true }
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+
+    if (showThemeDialog && themeController != null) {
+        ThemeModeDialog(
+            current = themeController.mode,
+            onSelect = { mode ->
+                themeController.onModeChange(mode)
+                showThemeDialog = false
+            },
+            onDismiss = { showThemeDialog = false },
+        )
+    }
+
+    if (showLogoutDialog) {
+        AlertDialogCustom(
+            onDismissRequest = { showLogoutDialog = false },
+            onConfirmation = {
+                showLogoutDialog = false
+                navController.navigate(Login.route)
+            },
+            dialogTitle = "Logout",
+            dialogText = "Are you sure you want to logout?",
+        )
+    }
+}
+
+@Composable
+private fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onBackground,
+        modifier = Modifier.padding(horizontal = 4.dp)
+    )
+}
+
+@Composable
+private fun SettingsCard(content: @Composable () -> Unit) {
+    GlassCard(
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            content()
         }
     }
 }
 
-@Preview
-@Composable
-fun PreviewProfileScreen() {
-    ProfileScreen(navController = rememberNavController())
-}

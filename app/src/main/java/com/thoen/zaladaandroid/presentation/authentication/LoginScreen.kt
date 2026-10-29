@@ -1,24 +1,17 @@
 package com.thoen.zaladaandroid.presentation.authentication
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,93 +21,30 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.thoen.zaladaandroid.R
+import com.thoen.zaladaandroid.presentation.authentication.component.AuthScaffold
+import com.thoen.zaladaandroid.presentation.authentication.component.FieldLabel
 import com.thoen.zaladaandroid.presentation.component.CardSocialMedia
 import com.thoen.zaladaandroid.presentation.component.CustomTextField
 import com.thoen.zaladaandroid.presentation.component.FilledButtonCustom
 import com.thoen.zaladaandroid.presentation.navigation.ForgetPassword
 import com.thoen.zaladaandroid.presentation.navigation.Main
 import com.thoen.zaladaandroid.presentation.navigation.Signup
-import com.thoen.zaladaandroid.presentation.theme.ZaladaAndroidTheme
-
-@SuppressLint("UnrememberedMutableInteractionSource")
-@Composable
-fun LoginScreen(
-    navController: NavController,
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .imePadding()
-                .clickable(
-                    onClick = {
-                        keyboardController?.hide()
-                    },
-                    interactionSource = MutableInteractionSource(),
-                    indication = null
-                )
-
-
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 8.dp)
-
-            ) {
-                BodyLogin(navController)
-            }
-        }
-    }
-}
 
 @Composable
-fun BodyLogin(
-    navController: NavController
-) {
+fun LoginScreen(navController: NavController) {
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    Column {
-        Box(
-            modifier = Modifier
-                .height(40.dp)
-        )
-        Text(
-            text = "Login to your\naccount.",
-            modifier = Modifier.padding(16.dp),
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold,
-            lineHeight = 40.sp
-        )
-        Box(
-            modifier = Modifier
-                .height(40.dp)
-        )
-        Text(
-            text = "Email Address",
-            modifier = Modifier.padding(horizontal = 16.dp),
-            fontSize = 16.sp,
-            lineHeight = 12.sp
-
-        )
+    AuthScaffold(
+        title = "Welcome back",
+        subtitle = "Login to your account and continue shopping.",
+    ) {
+        FieldLabel("Email Address")
         CustomTextField(
             keyboardType = KeyboardType.Email,
             label = "Email",
@@ -122,143 +52,93 @@ fun BodyLogin(
             onTextChanged = { username = it },
             passwordVisible = true
         )
-        Box(
-            modifier = Modifier
-                .height(16.dp)
-        )
-        Text(
-            text = "Password",
-            modifier = Modifier.padding(horizontal = 16.dp),
-            fontSize = 16.sp,
-            lineHeight = 12.sp
-        )
+        FieldLabel("Password")
         CustomTextField(
             keyboardType = KeyboardType.Password,
             label = "Password",
             value = password,
             onTextChanged = { password = it },
         )
-        Row {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
             TextButton(
-                onClick = {
-                    navController.navigate(ForgetPassword.route)
-                },
-                modifier = Modifier
-                    .padding(horizontal = 1.dp),
-                shape = RoundedCornerShape(8.dp),
-
-                ) {
+                onClick = { navController.navigate(ForgetPassword.route) },
+                shape = RoundedCornerShape(12.dp),
+            ) {
                 Text(
                     text = "Forgot Password?",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W500,
-                    textDecoration = TextDecoration.Underline
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .height(24.dp)
-        )
+        Spacer(modifier = Modifier.height(12.dp))
         FilledButtonCustom(
-            onClick = {
-                navController.navigate(Main.route)
-            },
+            onClick = { navController.navigate(Main.route) },
             text = "Login",
         )
-        Box(
-            modifier = Modifier
-                .height(16.dp)
-        )
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .height(1.dp)
-                    .width(100.dp)
-                    .background(Color(0xFFE0E0E0))
-                    .weight(1f)
-            )
-            Text(
-                text = "OR",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W400,
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .height(1.dp)
-                    .width(100.dp)
-                    .background(Color(0xFFE0E0E0))
-                    .weight(1f)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .height(8.dp)
-        )
+        Spacer(modifier = Modifier.height(20.dp))
+        OrDivider()
+        Spacer(modifier = Modifier.height(8.dp))
         CardSocialMedia(
             text = "Continue with Google",
             onClick = {},
             icon = R.drawable.google
         )
+        Spacer(modifier = Modifier.height(8.dp))
         CardSocialMedia(
             text = "Continue with Facebook",
             onClick = {},
             icon = R.drawable.facebook
         )
-        Box(
-            modifier = Modifier
-                .height(16.dp)
-        )
-
+        Spacer(modifier = Modifier.height(16.dp))
         Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Don't have an account?",
-                fontSize = 16.sp,
-                lineHeight = 12.sp
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            TextButton(
-                onClick = {
-                    navController.navigate(Signup.route)
-                },
-                shape = RoundedCornerShape(8.dp),
-
-                ) {
+            TextButton(onClick = { navController.navigate(Signup.route) }) {
                 Text(
                     text = "Sign Up",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W500,
-                    textDecoration = TextDecoration.Underline
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
-
-
     }
 }
 
-
-@Preview
 @Composable
-fun PreviewLoginScreen() {
-    ZaladaAndroidTheme {
-        LoginScreen(navController = rememberNavController())
+fun OrDivider() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.outlineVariant)
+        )
+        Text(
+            text = "OR",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 12.dp)
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.outlineVariant)
+        )
     }
 }

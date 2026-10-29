@@ -8,5 +8,4 @@ fun NotificationDto.toDomain(): NotificationItem = NotificationItem(
     title = title,
     message = message,
     time = time,
-    iconRes = iconRes,
 )

@@ -10,25 +10,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.thoen.zaladaandroid.domain.model.Product
-import com.thoen.zaladaandroid.presentation.home.component.ProductCard
 
 @Composable
 fun ProductGrid(
     products: List<Product>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     onProductClick: (Int) -> Unit = {},
+    onAddToCart: ((Product) -> Unit)? = null,
 ) {
+    val windowWidth = rememberWindowWidth()
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        columns = GridCells.Adaptive(minSize = windowWidth.productCardMinWidth),
+        contentPadding = contentPadding,
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
         modifier = modifier.fillMaxSize()
     ) {
         items(products, key = { it.id }) { product ->
             ProductCard(
                 product = product,
-                end = false,
+                onAddToCart = onAddToCart?.let { { it(product) } },
                 onClick = { onProductClick(product.id) },
             )
         }

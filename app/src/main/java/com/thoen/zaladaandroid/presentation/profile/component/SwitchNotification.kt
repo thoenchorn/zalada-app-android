@@ -1,14 +1,14 @@
 package com.thoen.zaladaandroid.presentation.profile.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -16,62 +16,51 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.thoen.zaladaandroid.presentation.theme.glassFillStrong
 
 @Composable
 fun SwitcherNotification(
-    onCheckedChange: (Boolean) -> Unit = {},
-    icon: Int,
+    @androidx.annotation.DrawableRes icon: Int,
     title: String,
-    checked: Boolean = false,
-
-    ){
-    Column(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color.White)
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-        ){
-            Box (
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100))
-                    .background(Color(0xFF2D3C52).copy(alpha = 0.1f))
-                    .padding(4.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = icon),
-                    contentDescription = "",
-                    modifier = Modifier.size(24.dp),
-                    colorFilter = ColorFilter.tint(Color(0xFF2D3C52))
-                )
-            }
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(
-                text = title,
-                color = Color.Black,
-                fontWeight = FontWeight.W400,
-                fontSize = 14.sp
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = Color(0xFF2D3C52),
-                    uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = Color(0xFF2D3C52).copy(alpha = 0.2f)
-                )
+                .size(38.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(glassFillStrong()),
+            contentAlignment = Alignment.Center
+        ) {
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(id = icon),
+                contentDescription = null,
+                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                modifier = Modifier.size(20.dp)
             )
         }
+        Spacer(modifier = Modifier.size(12.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
+            )
+        )
     }
 }

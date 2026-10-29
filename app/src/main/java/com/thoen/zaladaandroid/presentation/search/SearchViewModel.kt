@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.thoen.zaladaandroid.R
 import com.thoen.zaladaandroid.core.di.ServiceLocator
 import com.thoen.zaladaandroid.domain.model.Category
 import com.thoen.zaladaandroid.domain.model.Product
+import com.thoen.zaladaandroid.domain.usecase.AddToCartUseCase
 import com.thoen.zaladaandroid.domain.usecase.GetCategoriesUseCase
 import com.thoen.zaladaandroid.domain.usecase.SearchProductsUseCase
 import com.thoen.zaladaandroid.presentation.search.model.SearchTab
@@ -27,16 +27,17 @@ data class SearchUiState(
     val isLoading: Boolean = true,
 ) {
     val tabs: List<SearchTab>
-        get() = listOf(SearchTab("All", R.drawable.circles)) +
-            categories.map { SearchTab(it.name, it.iconRes) }
+        get() = listOf(SearchTab(id = null, title = "All")) +
+            categories.map { SearchTab(id = it.id, title = it.name) }
 
     val selectedCategoryId: String?
-        get() = categories.getOrNull(selectedTabIndex - 1)?.id
+        get() = if (selectedTabIndex == 0) null else categories.getOrNull(selectedTabIndex - 1)?.id
 }
 
 class SearchViewModel(
     private val getCategories: GetCategoriesUseCase,
     private val searchProducts: SearchProductsUseCase,
+    private val addToCart: AddToCartUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
@@ -62,6 +63,10 @@ class SearchViewModel(
         search()
     }
 
+    fun onAddToCart(product: Product) {
+        viewModelScope.launch { addToCart(product) }
+    }
+
     private fun search() {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
@@ -79,6 +84,7 @@ class SearchViewModel(
                 SearchViewModel(
                     ServiceLocator.getCategoriesUseCase,
                     ServiceLocator.searchProductsUseCase,
+                    ServiceLocator.addToCartUseCase,
                 )
             }
         }
