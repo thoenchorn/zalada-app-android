@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.thoen.zaladaandroid.core.common.UiState
 import com.thoen.zaladaandroid.core.di.ServiceLocator
 import com.thoen.zaladaandroid.domain.model.Product
+import com.thoen.zaladaandroid.domain.usecase.AddToCartUseCase
 import com.thoen.zaladaandroid.domain.usecase.GetProductsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class ProductAllViewModel(
     private val getProducts: GetProductsUseCase,
+    private val addToCart: AddToCartUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<Product>>>(UiState.Loading)
@@ -36,9 +38,18 @@ class ProductAllViewModel(
         }
     }
 
+    fun onAddToCart(product: Product) {
+        viewModelScope.launch { addToCart(product) }
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer { ProductAllViewModel(ServiceLocator.getProductsUseCase) }
+            initializer {
+                ProductAllViewModel(
+                    ServiceLocator.getProductsUseCase,
+                    ServiceLocator.addToCartUseCase,
+                )
+            }
         }
     }
 }

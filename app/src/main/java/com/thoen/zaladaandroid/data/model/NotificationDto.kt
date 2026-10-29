@@ -5,5 +5,4 @@ data class NotificationDto(
     val title: String,
     val message: String,
     val time: String,
-    val iconRes: Int,
 )

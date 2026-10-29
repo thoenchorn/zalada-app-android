@@ -1,7 +1,5 @@
 package com.thoen.zaladaandroid.presentation.home
 
-
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,54 +7,72 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.thoen.zaladaandroid.R
 import com.thoen.zaladaandroid.core.common.formatAsPrice
+import com.thoen.zaladaandroid.domain.model.Product
+import com.thoen.zaladaandroid.presentation.component.AppIcons
 import com.thoen.zaladaandroid.presentation.component.ButtonBack
-import com.thoen.zaladaandroid.presentation.navigation.DetailProduct
+import com.thoen.zaladaandroid.presentation.component.ProductCard
 import com.thoen.zaladaandroid.presentation.component.ShapeIcons
-import com.thoen.zaladaandroid.presentation.home.component.ProductCard
+import com.thoen.zaladaandroid.presentation.component.WindowWidth
+import com.thoen.zaladaandroid.presentation.component.horizontalPadding
+import com.thoen.zaladaandroid.presentation.component.rememberWindowWidth
+import com.thoen.zaladaandroid.presentation.navigation.Cart
+import com.thoen.zaladaandroid.presentation.navigation.DetailProduct
+import com.thoen.zaladaandroid.presentation.theme.glassBorder
+import com.thoen.zaladaandroid.presentation.theme.glassFillStrong
 
+private val ColorOptions = listOf(
+    Color(0xFF2D3C52),
+    Color(0xFFA6A5AA),
+    Color(0xFFF2E0CC),
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +84,8 @@ fun DetailsProductScreen(
     ),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val windowWidth = rememberWindowWidth()
+    val horizontal = windowWidth.horizontalPadding
     val product = uiState.product
 
     if (product == null) {
@@ -76,351 +94,351 @@ fun DetailsProductScreen(
             contentAlignment = Alignment.Center
         ) {
             if (uiState.isLoading) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
         return
     }
 
-    val listColors = listOf(
-        Color(0xFF2D3C52),
-        Color(0xFFA6A5AA),
-        Color(0xFFF2E0CC),
-    )
     Scaffold(
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = "",
-                        color = Color.Black,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 20.sp
-                    )
-                },
+                title = { },
                 navigationIcon = {
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp, vertical = 12.dp)
-
-                    ) {
-                        ButtonBack(
-                            onClick = {
-                                navController.popBackStack()
-                            }
-                        )
-                    }
-
+                    ButtonBack(onClick = { navController.popBackStack() })
                 },
                 actions = {
                     ShapeIcons(
-                        onClick = {},
+                        onClick = { navController.navigate(Cart.route) },
                         icon = R.drawable.bag_light
                     )
-                    Spacer(modifier = Modifier.size(12.dp))
                     ShapeIcons(
-                        onClick = { viewModel.onFavoriteClick() },
-                        icon = R.drawable.heart_light
+                        onClick = viewModel::onFavoriteClick,
+                        icon = if (uiState.isFavorite) R.drawable.heart_bold else R.drawable.heart_light,
+                        modifier = Modifier.padding(start = 10.dp, end = 4.dp)
                     )
-                    Spacer(modifier = Modifier.size(12.dp))
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                )
             )
-
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .background(Color.White)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box (
-                        contentAlignment = Alignment.TopEnd
-                    ){
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(100))
-                                .background(Color.White.copy(alpha = 0.1f))
-                                .border(
-                                    width = 1.dp,
-                                    color = Color.Gray.copy(alpha = 0.1f),
-                                    shape = RoundedCornerShape(100)
-                                )
-                                .clickable(
-                                    onClick = { viewModel.onAddToCart() }
-                                )
-                                .padding(10.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.buy),
-                                contentDescription = "Add to cart",
-                                tint = Color(0xFF2D3C52),
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clip(RoundedCornerShape(100))
-                                .background(Color(0xFFE8E8EA)),
-                            contentAlignment = Alignment.Center
-
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.add_),
-                                contentDescription = "Icon",
-                                colorFilter = ColorFilter.tint(Color.Black),
-
-                                alignment = Alignment.CenterEnd
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                    Button(
-                        onClick = {},
-                        modifier = Modifier
-                            .height(48.dp)
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(30.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2D3C52),
-                        )
-                    ) {
-                        Text(
-                            text = "Checkout",
-                            color = Color.White,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 16.sp
-                        )
-                        
-                    }
-                }
-            }
-        }
+            DetailBottomBar(
+                product = product,
+                horizontalPadding = horizontal,
+                onAddToCart = viewModel::onAddToCart,
+            )
+        },
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .imePadding()
-        ) {
-            Column(
+        if (windowWidth == WindowWidth.Expanded) {
+            Row(
                 modifier = Modifier
+                    .padding(innerPadding)
                     .fillMaxSize()
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = horizontal)
             ) {
-                if (product.isNewArrival) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFFFF9C44))
-                            .padding(horizontal = 12.dp)
-                    ) {
-                        Text(
-                            text = "NEW ARRIVAL",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.W600,
-                            color = Color.White
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.size(16.dp))
-                Text(
-                    text = product.name,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.W600,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                )
                 Box(
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 16.dp)
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = product.discountPrice.formatAsPrice(),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.W700,
-                            color = Color(0xFF1B5EC9)
-                        )
-                        Spacer(modifier = Modifier.size(4.dp))
-                        Text(
-                            text = product.originalPrice.formatAsPrice(),
-                            fontSize = 14.sp,
-                            color = Color(0xFF7C7D82),
-                            fontWeight = FontWeight.W400,
-                            textDecoration = TextDecoration.LineThrough
-                        )
-                    }
+                    ProductGallery(product = product, modifier = Modifier.fillMaxWidth())
                 }
-                SliderProduct(imageRes = product.imageRes)
-                Spacer(modifier = Modifier.size(16.dp))
-                Text(
-                    text = "Color",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.W500,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.size(8.dp))
-                LazyRow(
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
+                        .padding(start = 28.dp)
                 ) {
-                    items(listColors.size) {
-                        Box(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(100))
-                                .background(listColors[it])
-                                .clickable(
-                                    onClick = {
-
-                                    }
-                                )
-                                .border(
-                                    width = 2.dp,
-                                    color = Color(0xFFA6A5AA),
-                                    shape = RoundedCornerShape(100)
-                                )
-                                .padding(2.dp)
-                        ) {
-
-                        }
-
-                    }
+                    ProductInfo(product = product)
+                    RecommendedProducts(
+                        products = uiState.recommendedProducts,
+                        horizontalPadding = 0.dp,
+                        onProductClick = {
+                            navController.navigate(DetailProduct.createRoute(it.id))
+                        },
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                Spacer(modifier = Modifier.size(16.dp))
-                Text(
-                    text = "Description",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.W500,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                ProductGallery(
+                    product = product,
+                    modifier = Modifier.padding(horizontal = horizontal)
                 )
-                Spacer(modifier = Modifier.size(8.dp))
-                Text(
-                    text = "The MacBook Pro is a line of Macintosh portable computers introduced in January 2006, by Apple Inc. It is the higher-end model of the MacBook family,",
-                    fontSize = 14.sp,
-                    color = Color(0xFF7C7D82),
-                    fontWeight = FontWeight.W400,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                ProductInfo(
+                    product = product,
+                    modifier = Modifier.padding(horizontal = horizontal)
                 )
-                Spacer(modifier = Modifier.size(16.dp))
-                Text(
-                    text = "Recommend for you",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.W500,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                RecommendedProducts(
+                    products = uiState.recommendedProducts,
+                    horizontalPadding = horizontal,
+                    onProductClick = {
+                        navController.navigate(DetailProduct.createRoute(it.id))
+                    },
                 )
-                Spacer(modifier = Modifier.size(8.dp))
-                LazyRow {
-                    items(uiState.recommendedProducts.size) { index ->
-                        val recommended = uiState.recommendedProducts[index]
-                        ProductCard(
-                            product = recommended,
-                            end = true,
-                            onClick = {
-                                navController.navigate(DetailProduct.createRoute(recommended.id))
-                            }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
-
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SliderProduct(
-    imageRes: Int,
+private fun ProductGallery(
+    product: Product,
     modifier: Modifier = Modifier,
 ) {
-    val pageState = rememberPagerState(pageCount = { 5 })
-    Column {
-        Box(
-            modifier = modifier
-                .wrapContentSize()
+    Box(
+        modifier = modifier
+            .padding(top = 4.dp)
+            .fillMaxWidth()
+            .aspectRatio(1.15f)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(glassFillStrong())
+            .border(1.dp, glassBorder(), MaterialTheme.shapes.extraLarge),
+        contentAlignment = Alignment.Center
+    ) {
+        androidx.compose.foundation.Image(
+            painter = painterResource(id = product.imageRes),
+            contentDescription = product.name,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(28.dp)
+        )
+    }
+}
+
+@Composable
+private fun ProductInfo(
+    product: Product,
+    modifier: Modifier = Modifier,
+) {
+    var selectedColor by rememberSaveable { mutableIntStateOf(0) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            HorizontalPager(
-                state = pageState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
+            if (product.isNewArrival) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape,
                 ) {
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(400.dp)
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .padding(horizontal = 16.dp)
+                    Text(
+                        text = "NEW ARRIVAL",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                     )
                 }
             }
-
+            Surface(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = CircleShape,
+            ) {
+                Text(
+                    text = product.categoryId.replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                )
+            }
         }
-        Spacer(modifier = Modifier.size(16.dp))
-        Row(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            for (i in 0 until 5) {
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
 
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(
-                            Color.White
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = if (pageState.currentPage == i)
-                                Color(0xFF2D3C52) else
-                                Color(0xFFEAEAEA),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(8.dp)
+        Text(
+            text = product.name,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = product.discountPrice.formatAsPrice(),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = product.originalPrice.formatAsPrice(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textDecoration = TextDecoration.LineThrough
+            )
+            if (product.originalPrice > product.discountPrice) {
+                val discount = ((product.originalPrice - product.discountPrice) / product.originalPrice * 100).toInt()
+                Surface(
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                    shape = CircleShape,
                 ) {
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                    Text(
+                        text = "-$discount%",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
                 }
+            }
+        }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 6.dp),
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
+
+        Text(
+            text = "Color",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ColorOptions.forEachIndexed { index, color ->
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .border(
+                            width = if (selectedColor == index) 3.dp else 1.dp,
+                            color = if (selectedColor == index) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.outline
+                            },
+                            shape = CircleShape
+                        )
+                        .clickable { selectedColor = index }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Description",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = product.description,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun RecommendedProducts(
+    products: List<Product>,
+    horizontalPadding: androidx.compose.ui.unit.Dp,
+    onProductClick: (Product) -> Unit,
+) {
+    if (products.isEmpty()) return
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.padding(start = horizontalPadding, end = horizontalPadding, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "You may also like",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(id = AppIcons.category(null)),
+                contentDescription = null,
+                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(products, key = { it.id }) { product ->
+                ProductCard(
+                    product = product,
+                    modifier = Modifier.width(168.dp),
+                    onClick = { onProductClick(product) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailBottomBar(
+    product: Product,
+    horizontalPadding: androidx.compose.ui.unit.Dp,
+    onAddToCart: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+        shadowElevation = 20.dp,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(horizontal = horizontalPadding, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Column {
+                Text(
+                    text = "Total price",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = product.discountPrice.formatAsPrice(),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = onAddToCart,
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                modifier = Modifier.height(54.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.bag_light),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(Color.White),
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Add to Cart",
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }

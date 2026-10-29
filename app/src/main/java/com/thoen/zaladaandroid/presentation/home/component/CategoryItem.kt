@@ -1,75 +1,77 @@
 package com.thoen.zaladaandroid.presentation.home.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
+import com.thoen.zaladaandroid.presentation.theme.glassBorder
+import com.thoen.zaladaandroid.presentation.theme.glassFill
 
 @Composable
 fun CategoryItem(
     onClick: () -> Unit,
-    icon: Int,
-    title: String
+    @androidx.annotation.DrawableRes icon: Int,
+    title: String,
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = Modifier
-            .padding(end = 12.dp)
-            .size(80.dp, 80.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.White)
-            .clickable(
-                onClick = onClick
-            )
-            .padding(vertical = 4.dp, horizontal = 2.dp),
-
-
-        contentAlignment = Alignment.Center
+    val accent = MaterialTheme.colorScheme.primary
+    Column(
+        modifier = modifier
+            .width(78.dp)
+            .clip(MaterialTheme.shapes.large)
+            .clickable(onClick = onClick)
+            .padding(vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100))
-                    .background(Color(0xFF576F85).copy(alpha = 0.2f))
-                    .padding(8.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = icon),
-                    contentDescription = "Mac",
-                    modifier = Modifier
-                        .size(26.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp)),
-                    colorFilter = ColorFilter.tint(Color.White)
+        Box(
+            modifier = Modifier
+                .size(58.dp)
+                .shadow(
+                    elevation = 14.dp,
+                    shape = RoundedCornerShape(20.dp),
+                    ambientColor = accent.copy(alpha = 0.55f),
+                    spotColor = accent.copy(alpha = 0.55f),
+                    clip = false,
                 )
-            }
-            Spacer(modifier = Modifier.size(4.dp))
-            Text(
-                text = title,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500
+                .clip(RoundedCornerShape(20.dp))
+                .background(glassFill())
+                .border(1.dp, glassBorder(), RoundedCornerShape(20.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            androidx.compose.foundation.Image(
+                painter = painterResource(id = icon),
+                contentDescription = title,
+                colorFilter = ColorFilter.tint(accent),
+                modifier = Modifier.size(26.dp)
             )
         }
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }

@@ -1,6 +1,5 @@
 package com.thoen.zaladaandroid.data.source
 
-import com.thoen.zaladaandroid.R
 import com.thoen.zaladaandroid.data.model.NotificationDto
 
 class NotificationLocalDataSource {
@@ -11,7 +10,6 @@ class NotificationLocalDataSource {
             title = "Discount 50% for all products Discount 50% for all products Discount 50% for all products",
             message = "Discount 50% for all products Discount 50% for all products",
             time = "1 day ago",
-            iconRes = R.drawable.discount,
         )
     }
 
