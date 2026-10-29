@@ -1,0 +1,42 @@
+package com.thoen.zaladaandroid.presentation.component
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun ShapeIcons(
+    onClick: () -> Unit,
+    icon: Int,
+) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(RoundedCornerShape(100))
+            .background(Color.Gray.copy(alpha = 0.1f))
+            .clickable(
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = "Icon",
+            modifier = Modifier.size(24.dp),
+            colorFilter = ColorFilter.tint(Color.Black),
+
+            alignment = Alignment.CenterEnd
+        )
+    }
+}
